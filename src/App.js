@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, Component } from "react";
+import SearchComponent from "./Components/SearchComponent";
+import api from "./Api/unsplashapi";
+import ImageList from "./Components/ImageList";
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      term: "",
+      images: [],
+      loading: false,
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  async handleSubmit(term) {
+    //connect unsplash api
+    let response = await api.get("/search/photos", {
+      params: {
+        query: term,
+      },
+    });
+    this.setState({ images: response.data.results, loading: true });
+  }
+  render() {
+    console.log(this.state.images);
+    return (
+      <Fragment>
+        <SearchComponent Submit={this.handleSubmit} />
+        <ImageList Images={this.state} />
+      </Fragment>
+    );
+  }
 }
 
 export default App;
